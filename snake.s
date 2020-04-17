@@ -3,23 +3,23 @@
 start:
 #make outer edge
 	addi $r5, $r0, 128
-	addi $r2, $r2, 16383
+	addi $r2, $r2, 16256
 	addi $r3, $r0, 0
 	addi $r4, $r0, 127
 	addi $r10, $r0, 1
 makeSides:
 	vid $r1, $r0, 31744
-	vid $r2, $r0, 31744
+	vid $r2, $r1, 31744
 	vid $r3, $r0, 31744
-	vid $r4, $r0, 31744
+	vid $r4, $r3, 31744
 	sw $r10, 0($r1)
-	sw $r10, 0($r2)
+	sw $r10, 16256($r1)
 	sw $r10, 0($r3)
-	sw $r10, 0($r4)
+	sw $r10, 127($r3)
 	addi $r1, $r1, 1
-	addi $r2, $r2, -1
-	addi $r3, $r3, -128
-	addi $r4, $r4, 128
+	# addi $r2, $r2, -1
+	addi $r3, $r3, 128
+	# addi $r4, $r4, 128
 	blt $r1, $r5, makeSides
 
 startSnake: #initialize location of snake head 2x2 pixels
@@ -35,19 +35,20 @@ startSnake: #initialize location of snake head 2x2 pixels
 
 	addi $r21, $r0, 8256 #hold position of head to start but becomes postion of back
 	
+	addi $r16, $r0, 2
 	addi $r17, $r0, 0
 	addi $r18, $r0, 10191
+
 	
 	addi $r10, $r0, 0
 
-	addi $r20, $r0, 2 #register for moves
+	addi $r20, $r0, 4 #register for moves
 	addi $r19, $r0, 0 #counts moves while lengthening
 
 	vid $r1, $r0, 32767
 	vid $r2, $r1, 32767
 	vid $r3, $r1, 32767
 	vid $r4, $r1, 32767
-	vid $r5, $r1, 0
 	vid $r6, $r1, 32767
 	vid $r7, $r1, 32767
 	vid $r8, $r1, 32767
@@ -81,7 +82,7 @@ move:
 	bne $r1, $r18, noApple
 
 eatApple:
-	addi $r19, $r19, -1
+	addi $r19, $r19, -3
 	addi $r17, $r0, 1
 	j pass
 
@@ -122,7 +123,6 @@ pass: #move the front
 	vid $r2, $r1, 32767
 	vid $r3, $r1, 32767
 	vid $r4, $r1, 32767
-	vid $r5, $r1, 0
 	vid $r6, $r1, 32767
 	vid $r7, $r1, 32767
 	vid $r8, $r1, 32767
@@ -133,6 +133,7 @@ pass: #move the front
 newApple:
 	addi $r17, $r0, 0
 	addi $r18, $r21, 0
+
 	vid $r18, $r0, 31744
 	vid $r2, $r18, 480
 	vid $r3, $r18, 31744
@@ -150,20 +151,15 @@ newApple:
 longer:
 	addi $r19, $r19, 1
 	j pass
+
 lose:
 	lw $r10, 0($r21)
 	lw $r11, 2($r21)
 	lw $r12, 256($r21)
+	or $r13, $r10, $r11
+	or $r13, $r13, $r12
 
-	bne $r10, $r2, check2
-	j startSnake
-
-check2:
-	bne $r11, $r2, check3
-	j startSnake
-
-check3:
-	bne $r12, $r2, contLose
+	bne $r13, $r2, contLose
 	j startSnake
 
 contLose:
@@ -182,4 +178,15 @@ contLose:
 	add $r21, $r21, $r10
 	
 	bne $r10, $r0, lose
+byeApple:
+	vid $r18, $r0, 0
+	vid $r2, $r18, 0
+	vid $r3, $r18, 0
+	vid $r4, $r18, 0
+	vid $r5, $r18, 0
+	vid $r6, $r18, 0
+	vid $r7, $r18, 0
+	vid $r8, $r18, 0
+	vid $r9, $r18, 0
+
 	j startSnake
