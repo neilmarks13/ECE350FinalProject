@@ -25,21 +25,19 @@ makeSides:
 startSnake: #initialize location of snake head 2x2 pixels
 	addi $r1, $r0, 8256
 	addi $r2, $r0, 1
-	addi $r3, $r0, 2
-	addi $r4, $r0, 128
-	addi $r5, $r0, 129
-	addi $r6, $r0, 130
-	addi $r7, $r0, 256
-	addi $r8, $r0, 257
-	addi $r9, $r0, 258
+	addi $r3, $r0, 128
+	addi $r4, $r0, 129
+	# addi $r5, $r0, 129
+	# addi $r6, $r0, 130
+	# addi $r7, $r0, 256
+	# addi $r8, $r0, 257
+	# addi $r9, $r0, 258
 
 	addi $r21, $r0, 8256 #hold position of head to start but becomes postion of back
 	
-	addi $r16, $r0, 2
 	addi $r17, $r0, 0
-	addi $r18, $r0, 10191
+	rand $r18
 
-	
 	addi $r10, $r0, 0
 
 	addi $r20, $r0, 4 #register for moves
@@ -49,20 +47,23 @@ startSnake: #initialize location of snake head 2x2 pixels
 	vid $r2, $r1, 32767
 	vid $r3, $r1, 32767
 	vid $r4, $r1, 32767
-	vid $r6, $r1, 32767
-	vid $r7, $r1, 32767
-	vid $r8, $r1, 32767
-	vid $r9, $r1, 32767
+	# vid $r6, $r1, 32767
+	# vid $r7, $r1, 32767
+	# vid $r8, $r1, 32767
+	# vid $r9, $r1, 32767
 
 	vid $r18, $r0, 31744
 	vid $r2, $r18, 480
 	vid $r3, $r18, 31744
 	vid $r4, $r18, 31744
-	vid $r5, $r18, 31744
-	vid $r6, $r18, 31744
-	vid $r7, $r18, 31744
-	vid $r8, $r18, 31744
-	vid $r9, $r18, 31744
+	# vid $r5, $r18, 31744
+	# vid $r6, $r18, 31744
+	# vid $r7, $r18, 31744
+	# vid $r8, $r18, 31744
+	# vid $r9, $r18, 31744
+
+	key $r10
+	key $r10
 
 hold:
 	key $r10 #get keyboard entry
@@ -82,18 +83,26 @@ move:
 	bne $r1, $r18, noApple
 
 eatApple:
+	rand $r18
+	lw $r17, 0($r18)
+	lw $r16, 129($r18)
+	bne $r17, $r0, eatApple
+	bne $r16, $r0, eatApple
+	
 	addi $r19, $r19, -3
-	addi $r17, $r0, 1
+	vid $r18, $r0, 31744
+	vid $r2, $r18, 480
+	vid $r3, $r18, 31744
+	vid $r4, $r18, 31744
+
 	j pass
 
 noApple:
 	lw $r13, 0($r1) #load anything at that location
-	lw $r14, 2($r1)
-	lw $r15, 256($r1)
+	lw $r14, 127($r1)
 
-	bne $r13, $r0, lose #check if position is occupied; if so game over
-	bne $r14, $r0, lose #check if position is occupied; if so game over
-	bne $r15, $r0, lose #check if position is occupied; if so game over
+	bne $r13, $r0, byeApple #check if position is occupied; if so game over
+	bne $r14, $r0, byeApple #check if position is occupied; if so game over
 	blt $r19, $r20, longer #see if snake needs to be make longer
 
 back: #move the back
@@ -101,17 +110,15 @@ back: #move the back
 
 	sw $r0, 0($r21)
 
-	bne $r17, $r0, newApple
-
 	vid $r21, $r0, 0
 	vid $r2, $r21, 0
 	vid $r3, $r21, 0
 	vid $r4, $r21, 0
-	vid $r5, $r21, 0
-	vid $r6, $r21, 0
-	vid $r7, $r21, 0
-	vid $r8, $r21, 0
-	vid $r9, $r21, 0
+	# vid $r5, $r21, 0
+	# vid $r6, $r21, 0
+	# vid $r7, $r21, 0
+	# vid $r8, $r21, 0
+	# vid $r9, $r21, 0
 	
 	add $r21, $r21, $r10
 
@@ -123,41 +130,33 @@ pass: #move the front
 	vid $r2, $r1, 32767
 	vid $r3, $r1, 32767
 	vid $r4, $r1, 32767
-	vid $r6, $r1, 32767
-	vid $r7, $r1, 32767
-	vid $r8, $r1, 32767
-	vid $r9, $r1, 32767
+	# vid $r6, $r1, 32767
+	# vid $r7, $r1, 32767
+	# vid $r8, $r1, 32767
+	# vid $r9, $r1, 32767
 
 	j move
 
-newApple:
-	addi $r17, $r0, 0
-	addi $r18, $r21, 0
-
-	vid $r18, $r0, 31744
-	vid $r2, $r18, 480
-	vid $r3, $r18, 31744
-	vid $r4, $r18, 31744
-	vid $r5, $r18, 31744
-	vid $r6, $r18, 31744
-	vid $r7, $r18, 31744
-	vid $r8, $r18, 31744
-	vid $r9, $r18, 31744
-
-	add $r21, $r21, $r10
-
-	j pass
 
 longer:
 	addi $r19, $r19, 1
 	j pass
 
+byeApple:
+	vid $r18, $r0, 0
+	vid $r2, $r18, 0
+	vid $r3, $r18, 0
+	vid $r4, $r18, 0
+	# vid $r5, $r18, 0
+	# vid $r6, $r18, 0
+	# vid $r7, $r18, 0
+	# vid $r8, $r18, 0
+	# vid $r9, $r18, 0
+
 lose:
 	lw $r10, 0($r21)
-	lw $r11, 2($r21)
-	lw $r12, 256($r21)
+	lw $r11, 129($r21)
 	or $r13, $r10, $r11
-	or $r13, $r13, $r12
 
 	bne $r13, $r2, contLose
 	j startSnake
@@ -167,26 +166,14 @@ contLose:
 	vid $r2, $r21, 0
 	vid $r3, $r21, 0
 	vid $r4, $r21, 0
-	vid $r5, $r21, 0
-	vid $r6, $r21, 0
-	vid $r7, $r21, 0
-	vid $r8, $r21, 0
-	vid $r9, $r21, 0
+	# vid $r5, $r21, 0
+	# vid $r6, $r21, 0
+	# vid $r7, $r21, 0
+	# vid $r8, $r21, 0
+	# vid $r9, $r21, 0
 	
 	sw $r0, 0($r21)
 	
 	add $r21, $r21, $r10
 	
 	bne $r10, $r0, lose
-byeApple:
-	vid $r18, $r0, 0
-	vid $r2, $r18, 0
-	vid $r3, $r18, 0
-	vid $r4, $r18, 0
-	vid $r5, $r18, 0
-	vid $r6, $r18, 0
-	vid $r7, $r18, 0
-	vid $r8, $r18, 0
-	vid $r9, $r18, 0
-
-	j startSnake
