@@ -80,10 +80,10 @@ firstApple:
 	addi $r19, $r0, 0 #counts moves while lengthening
 
 	#print the initial head location all white
-	vid $r1, $r0, 32767
-	vid $r2, $r1, 32767
-	vid $r3, $r1, 32767
-	vid $r4, $r1, 32767
+	vid $r1, $r0, 8936 #32767
+	vid $r2, $r1, 8936
+	vid $r3, $r1, 8936
+	vid $r4, $r1, 8936
 
 	#print the initial apple location green top red bottem
 	vid $r18, $r0, 480
@@ -105,6 +105,7 @@ move:
 	sub $r12, $r0, $r10 #r12 to the inverse of the move
 	bne $r12, $r11, normal #cant move backwards so check for that
 	add $r10, $r11, $r0 #if moving backwards then use previous direction instead
+	add $r0, $r0, $r0
 
 	
 normal:
@@ -170,24 +171,24 @@ back: #move the back
 
 pass: #move the front
 	#fill the eye hole
-	vid $r0, $r5, 32767
-	vid $r5, $r4, 32767
+	vid $r0, $r5, 8936
+	vid $r5, $r4, 8936
 	#print the corners that are always white
-	vid $r2, $r1, 32767
-	vid $r3, $r1, 32767
+	vid $r2, $r1, 8936
+	vid $r3, $r1, 8936
 
 	blt $r11, $r0, leftup #if moving left or up
 rightdown:
 	#put eye in bottom right corner
-	vid $r4, $r1, 7679
-	vid $r1, $r0, 32767
+	vid $r4, $r1, 32767
+	vid $r1, $r0, 8936
 	add $r0, $r0, $r0
 	add $r0, $r0, $r0
 	j move
 leftup: 
 	#put eye in top left corner
-	vid $r1, $r0, 7679
-	vid $r4, $r1, 32767
+	vid $r1, $r0, 32767
+	vid $r4, $r1, 8936
 
 	j move
 
@@ -240,13 +241,8 @@ contLose:
 	vid $r2, $r21, 0
 	vid $r3, $r21, 0
 	vid $r4, $r21, 0
-	# vid $r5, $r21, 0
-	# vid $r6, $r21, 0
-	# vid $r7, $r21, 0
-	# vid $r8, $r21, 0
-	# vid $r9, $r21, 0
 	
-	sw $r1, 0($r21) #clear the memory at the location of the back
+	sw $r0, 0($r21) #clear the memory at the location of the back
 	
 	add $r21, $r21, $r10 #move the back in the direction of travel
 	
